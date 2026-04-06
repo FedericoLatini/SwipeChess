@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SwipeChess</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SwipeChess">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { 
+            font-family: 'Poppins', sans-serif; text-align: center; 
+            background-color: #121212; color: #ffffff; margin: 0; padding: 20px; 
+            display: flex; flex-direction: column; min-height: 95vh;
+            user-select: none; -webkit-user-select: none; overflow-x: hidden;
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .screen { display: none; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; }
+        .screen.active { display: flex; animation: slideUpFade 0.4s ease-out forwards; }
+
+        h1 { 
+            font-size: 3.5em; margin-bottom: 5px; font-weight: 800;
+            background: linear-gradient(90deg, #ffffff, #888888);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: -1px; line-height: 1;
+        }
+        .subtitle { font-size: 1.1em; color: #aaaaaa; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 2px;}
+
+        .btn { 
+            width: 100%; max-width: 280px; padding: 18px; font-size: 18px; 
+            cursor: pointer; border: none; border-radius: 50px; 
+            font-weight: 600; font-family: 'Poppins', sans-serif;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2); transition: all 0.2s ease; margin: 10px 0;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn:disabled { background: #444; color: #888; cursor: not-allowed; }
+        .btn:active { transform: scale(0.95); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .btn-primary { background: linear-gradient(135deg, #007aff, #005bb5); color: white; }
+        .btn-secondary { background-color: #2c2c2e; color: #ffffff; border: 1px solid #3a3a3c; }
+
+        .stats { 
+            display: flex; justify-content: space-between; width: 100%; max-width: 400px; 
+            margin: 0 auto 25px auto; font-size: 1.1em; font-weight: 600; 
+            background: #1e1e1e; padding: 15px 25px; border-radius: 20px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3); box-sizing: border-box; border: 1px solid #2c2c2e;
+            z-index: 10;
+        }
+
+        .score-box { display: flex; flex-direction: column; align-items: center; }
+        .score-label { font-size: 0.7em; color: #888; text-transform: uppercase; letter-spacing: 1px;}
+        .score-value { font-size: 1.4em; color: #fff; }
+
+        .game-area-wrapper {
+            position: relative;
+            width: 100%; max-width: 400px;
+            margin: 0 auto;
+        }
+
+        #swipe-card {
+            width: 100%; box-sizing: border-box; position: relative; 
+            background: #1e1e1e; border-radius: 12px; padding: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4); border: 1px solid #2c2c2e;
+            touch-action: none; cursor: grab;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease-out;
+            will-change: transform, opacity;
+            z-index: 10; 
+        }
+
+        #board-container { width: 100%; position: relative; }
+        #board { width: 100%; border-radius: 4px; overflow: hidden; pointer-events: none; }
+
+        .swipe-feedback-icon {
+            position: absolute;
+            top: 40%; 
+            left: 50%;
+            width: 140px; 
+            height: 140px;
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 100; 
+            will-change: transform, opacity;
+        }
+        #white-king-icon { filter: drop-shadow(0px 0px 15px rgba(255, 255, 255, 0.9)); }
+        #black-king-icon { filter: drop-shadow(0px 0px 20px rgba(255, 255, 255, 0.8)) drop-shadow(0px 0px 5px rgba(0,0,0,0.8)); }
+
+        .swipe-instructions { 
+            display: flex; justify-content: space-between; width: 100%; 
+            margin-top: 20px; font-weight: 600; font-size: 0.9em; 
+        }
+        .badge { 
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 8px 16px; border-radius: 20px; letter-spacing: 1px; 
+            background: #2c2c2e; border: 1px solid #3a3a3c; 
+        }
+        .swipe-left .badge { color: #aaaaaa; }
+        .swipe-right .badge { color: #ffffff; background: #333333;}
+        .badge svg { width: 18px; height: 18px; stroke-width: 2.5px; }
+
+        #last-move { margin-top: 20px; font-size: 1em; color: #aaaaaa; min-height: 25px; }
+        #last-move b { color: #ffffff; font-size: 1.1em; background: #2c2c2e; padding: 2px 8px; border-radius: 6px; margin-left: 5px;}
+        
+        #message { height: 40px; margin-top: 15px; font-size: 1.4em; font-weight: 800; display: flex; align-items: center; justify-content: center; z-index: 10;}
+        .success { color: #32d74b; }
+        .error { color: #ff453a; }
+
+        .highlight-move { box-shadow: inset 0 0 0 50px rgba(50, 215, 75, 0.4) !important; }
+    </style>
+</head>
+<body>
+
+    <div id="home-screen" class="screen active">
+        <h1>SWIPE<br>CHESS</h1>
+        <div class="subtitle">Eval Instinct Trainer</div>
+        
+        <div style="margin-bottom: 40px; background: #1e1e1e; padding: 20px 40px; border-radius: 20px; border: 1px solid #2c2c2e;">
+            <div class="score-label">PERSONAL BEST</div>
+            <div class="score-value" id="home-best-score" style="font-size: 2.5em; font-weight: 800; color: #007aff;">0</div>
+        </div>
+        
+        <button id="start-btn" class="btn btn-primary" onclick="startGame()" disabled>LOADING DB...</button>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <div class="stats">
+            <div class="score-box">
+                <span class="score-label">Score</span>
+                <span class="score-value" id="score">0</span>
+            </div>
+            <div class="score-box">
+                <span class="score-label">Best</span>
+                <span class="score-value" id="game-best-score">0</span>
+            </div>
+        </div>
+        
+        <div class="game-area-wrapper">
+            <img id="white-king-icon" class="swipe-feedback-icon" src="https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg" alt="White King">
+            <img id="black-king-icon" class="swipe-feedback-icon" src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg" alt="Black King">
+            
+            <div id="swipe-card">
+                <div id="board-container">
+                    <div id="board"></div>
+                    <div class="swipe-instructions">
+                        <span class="swipe-left">
+                            <span class="badge">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                                BLACK
+                            </span>
+                        </span>
+                        <span class="swipe-right">
+                            <span class="badge">
+                                WHITE
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                <div id="last-move">Last Move: -</div>
+            </div>
+        </div>
+        
+        <div id="message"></div>
+    </div>
+
+    <div id="game-over-screen" class="screen">
+        <h1 style="color: #ff453a; font-size: 3em;">GAME OVER</h1>
+        <div class="subtitle" id="game-over-reason">Wrong evaluation!</div>
+        
+        <div style="background: #1e1e1e; padding: 30px; border-radius: 20px; margin-bottom: 20px; width: 100%; max-width: 250px; border: 1px solid #2c2c2e;">
+            <div class="score-label">FINAL SCORE</div>
+            <div id="final-score" style="font-weight: 800; font-size: 3.5em; color: #fff;">0</div>
+            <div id="new-record-msg" style="color: #32d74b; font-weight: 600; margin-top: 10px; height: 20px; font-size: 0.9em; text-transform: uppercase;"></div>
+        </div>
+
+        <button class="btn btn-primary" onclick="startGame()">PLAY AGAIN</button>
+        <button class="btn btn-secondary" onclick="goHome()">BACK HOME</button>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    
+    <script>
+        let database = [];
+        let currentPosIndex = 0;
+        let score = 0;
+        let bestScore = localStorage.getItem("swipeChessBestScore") || 0;
+        let board = null;
+        let isDragging = false, startX = 0, currentX = 0, isProcessingSwipe = false;
+        
+        const swipeCard = document.getElementById('swipe-card');
+        const whiteKingIcon = document.getElementById('white-king-icon');
+        const blackKingIcon = document.getElementById('black-king-icon');
+        const startBtn = document.getElementById('start-btn');
+
+        async function loadDatabase() {
+            try {
+                const response = await fetch('puzzles.json');
+                database = await response.json();
+                database.sort(() => Math.random() - 0.5);
+                startBtn.innerText = "PLAY NOW";
+                startBtn.disabled = false;
+            } catch (e) {
+                startBtn.innerText = "DATABASE ERROR";
+                console.error("Error loading JSON:", e);
+            }
+        }
+
+        $(document).ready(() => {
+            updateBestScoreDisplays();
+            setupSwipeListeners();
+            loadDatabase();
+        });
+
+        function switchScreen(id) {
+            $('.screen').removeClass('active');
+            void document.getElementById(id).offsetWidth; 
+            $('#' + id).addClass('active');
+        }
+
+        function startGame() {
+            score = 0; currentPosIndex = 0; isProcessingSwipe = false;
+            document.getElementById('score').innerText = "0";
+            document.getElementById('message').innerText = "";
+            switchScreen('game-screen');
+            setTimeout(() => {
+                if (!board) {
+                    board = Chessboard('board', {
+                        position: 'start', showNotation: true,
+                        pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png'
+                    });
+                }
+                board.resize(); loadPosition();
+            }, 50);
+        }
+
+        function loadPosition() {
+            isProcessingSwipe = false;
+            swipeCard.style.transition = 'none'; swipeCard.style.transform = 'translateX(0px) rotate(0deg)'; swipeCard.style.opacity = '1';
+            whiteKingIcon.style.opacity = '0'; blackKingIcon.style.opacity = '0';
+            void swipeCard.offsetWidth;
+
+            if(currentPosIndex >= database.length) currentPosIndex = 0; 
+            const pos = database[currentPosIndex];
+            board.position(pos.fen);
+            document.getElementById('last-move').innerHTML = `Last Move: <b>${pos.lastMove}</b>`;
+            document.getElementById('message').style.opacity = 0;
+
+            $('#board .square-55d63').removeClass('highlight-move');
+            let sq = pos.lastMove.split('-');
+            if(sq.length === 2) {
+                $('#board .square-' + sq[0]).addClass('highlight-move');
+                $('#board .square-' + sq[1].substring(0, 2)).addClass('highlight-move');
+            }
+            setTimeout(() => { 
+                swipeCard.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease-out'; 
+            }, 50);
+        }
+
+        function setupSwipeListeners() {
+            const start = (x) => { if(isProcessingSwipe) return; isDragging = true; startX = x; swipeCard.style.transition = 'none'; };
+            const move = (x) => {
+                if(!isDragging || isProcessingSwipe) return;
+                currentX = x; let dx = currentX - startX;
+                swipeCard.style.transform = `translateX(${dx}px) rotate(${dx * 0.05}deg)`;
+                swipeCard.style.opacity = 1 - Math.min(Math.abs(dx) / 150, 0.7);
+                let prog = Math.min(Math.abs(dx) / 100, 1);
+                if(dx > 0) { whiteKingIcon.style.opacity = prog; whiteKingIcon.style.transform = `translate(-50%, -50%) scale(${0.5 + prog})`; blackKingIcon.style.opacity = 0; }
+                else { blackKingIcon.style.opacity = prog; blackKingIcon.style.transform = `translate(-50%, -50%) scale(${0.5 + prog})`; whiteKingIcon.style.opacity = 0; }
+            };
+            const end = () => {
+                if(!isDragging || isProcessingSwipe) return; isDragging = false;
+                let dx = currentX - startX;
+                if(Math.abs(dx) > 70) {
+                    isProcessingSwipe = true; let dir = dx > 0 ? 1 : -1;
+                    swipeCard.style.transition = 'all 0.3s ease-in';
+                    swipeCard.style.transform = `translateX(${dir * window.innerWidth}px) rotate(${dir * 30}deg)`;
+                    swipeCard.style.opacity = 0;
+                    setTimeout(() => makeGuess(dir > 0 ? 'white' : 'black'), 200);
+                } else { loadPosition(); }
+            };
+            swipeCard.addEventListener('touchstart', e => start(e.touches[0].clientX), {passive:true});
+            swipeCard.addEventListener('touchmove', e => { if(e.cancelable) e.preventDefault(); move(e.touches[0].clientX); }, {passive:false});
+            swipeCard.addEventListener('touchend', end);
+            swipeCard.addEventListener('mousedown', e => start(e.pageX));
+            window.addEventListener('mousemove', e => move(e.pageX));
+            window.addEventListener('mouseup', end);
+        }
+
+        function makeGuess(guess) {
+            const pos = database[currentPosIndex];
+            const msg = document.getElementById('message');
+            msg.style.opacity = 1;
+            if(guess === pos.correctAnswer) {
+                score++; document.getElementById('score').innerText = score;
+                msg.innerText = `CORRECT! 🔥 (${pos.eval})`; msg.className = "success";
+                currentPosIndex++; setTimeout(loadPosition, 800);
+            } else {
+                msg.innerText = `WRONG! (${pos.eval})`; msg.className = "error";
+                setTimeout(() => {
+                    document.getElementById('final-score').innerText = score;
+                    document.getElementById('game-over-reason').innerText = `Wrong! Engine Eval was ${pos.eval}`;
+                    if(score > bestScore) { bestScore = score; localStorage.setItem("swipeChessBestScore", bestScore); }
+                    updateBestScoreDisplays(); switchScreen('game-over-screen');
+                }, 1000);
+            }
+        }
+
+        function updateBestScoreDisplays() {
+            document.getElementById('home-best-score').innerText = bestScore;
+            document.getElementById('game-best-score').innerText = bestScore;
+        }
+
+        function goHome() { updateBestScoreDisplays(); switchScreen('home-screen'); }
+    </script>
+</body>
+</html>
