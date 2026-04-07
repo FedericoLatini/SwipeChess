@@ -91,11 +91,20 @@
         let database = [], currentPosIndex = 0, score = 0, bestScore = parseInt(localStorage.getItem("swipeChessBestScore")) || 0;
         let board = null, isDragging = false, startX = 0, currentX = 0, isProcessingSwipe = false;
         
+        // Funzione professionale per mescolare l'array (Fisher-Yates Shuffle)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
         async function loadDatabase() {
             try {
                 const response = await fetch('./puzzles.json?v=' + Date.now());
                 if (!response.ok) throw new Error("404 Not Found");
                 database = await response.json();
+                
                 document.getElementById('start-btn').innerText = "PLAY NOW";
                 document.getElementById('start-btn').disabled = false;
             } catch (e) { 
@@ -119,8 +128,8 @@
         function startGame() {
             score = 0; currentPosIndex = 0; isProcessingSwipe = false;
             
-            // Randomizzazione ad OGNI nuova partita
-            database.sort(() => Math.random() - 0.5);
+            // Randomizzazione SICURA ad ogni nuova partita
+            shuffleArray(database);
             
             document.getElementById('score').innerText = "0";
             document.getElementById('message').innerText = "";
@@ -145,22 +154,27 @@
             document.getElementById('black-king-icon').style.opacity = 0;
             
             if(currentPosIndex >= database.length) { 
-                database.sort(() => Math.random() - 0.5); 
+                shuffleArray(database); 
                 currentPosIndex = 0; 
             }
             const pos = database[currentPosIndex];
             
-            // Logica per calcolare la posizione DOPO la mossa usando chess.js
+            // Logica a prova di bomba per parsare la mossa (con o senza trattino)
+            const cleanMove = pos.lastMove.replace('-', '').trim();
+            const fromSq = cleanMove.substring(0, 2);
+            const toSq = cleanMove.substring(2, 4);
+            const promo = cleanMove.length > 4 ? cleanMove.substring(4, 5) : undefined;
+            
             const game = new Chess(pos.fen);
-            const fromSq = pos.lastMove.substring(0, 2);
-            const toSq = pos.lastMove.substring(2, 4);
-            const promo = pos.lastMove.length > 4 ? pos.lastMove.substring(4, 5) : 'q';
+            const moveResult = game.move({ from: fromSq, to: toSq, promotion: promo });
             
-            // Esegue la mossa virtualmente
-            game.move({ from: fromSq, to: toSq, promotion: promo });
-            
-            // Aggiorna la grafica con la nuova posizione
-            board.position(game.fen(), false);
+            // Se la mossa è valida, mostra il FEN successivo, altrimenti mostra quello base
+            if (moveResult) {
+                board.position(game.fen(), false);
+            } else {
+                board.position(pos.fen, false);
+                console.warn("Mossa illegale nel DB per il FEN fornito:", pos.lastMove);
+            }
             
             document.getElementById('last-move').innerHTML = `Last Move: <b>${fromSq}-${toSq}</b>`;
             document.getElementById('message').style.opacity = 0;
@@ -185,59 +199,4 @@
                 card.style.transform = `translateX(${dx}px) rotate(${dx * 0.05}deg)`;
                 card.style.opacity = 1 - Math.min(Math.abs(dx) / 150, 0.7);
                 let prog = Math.min(Math.abs(dx) / 100, 1);
-                if(dx > 0) { whiteIcon.style.opacity = prog; whiteIcon.style.transform = `translate(-50%, -50%) scale(${0.5 + prog})`; blackIcon.style.opacity = 0; }
-                else { blackIcon.style.opacity = prog; blackIcon.style.transform = `translate(-50%, -50%) scale(${0.5 + prog})`; whiteIcon.style.opacity = 0; }
-            };
-            const onEnd = () => {
-                if(!isDragging || isProcessingSwipe) return; isDragging = false;
-                let dx = currentX - startX;
-                if(Math.abs(dx) > 80) {
-                    isProcessingSwipe = true;
-                    let guess = dx > 0 ? 'white' : 'black';
-                    card.style.transition = 'all 0.3s ease-in';
-                    card.style.transform = `translateX(${(dx > 0 ? 1 : -1) * window.innerWidth}px) rotate(${(dx > 0 ? 1 : -1) * 30}deg)`;
-                    card.style.opacity = 0;
-                    setTimeout(() => makeGuess(guess), 250);
-                } else {
-                    card.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                    card.style.transform = 'translateX(0) rotate(0)';
-                    card.style.opacity = 1;
-                    whiteIcon.style.opacity = 0; blackIcon.style.opacity = 0;
-                }
-            };
-
-            card.addEventListener('touchstart', e => onStart(e.touches[0].clientX), {passive:true});
-            card.addEventListener('touchmove', e => { if(e.cancelable) e.preventDefault(); onMove(e.touches[0].clientX); }, {passive:false});
-            card.addEventListener('touchend', onEnd);
-            card.addEventListener('mousedown', e => onStart(e.pageX));
-            window.addEventListener('mousemove', e => onMove(e.pageX));
-            window.addEventListener('mouseup', onEnd);
-        }
-
-        function makeGuess(guess) {
-            const pos = database[currentPosIndex];
-            const msg = document.getElementById('message');
-            msg.style.opacity = 1;
-            
-            if(guess === pos.correctAnswer) {
-                score++; document.getElementById('score').innerText = score;
-                msg.innerText = `CORRECT! 🔥 (${pos.eval})`; msg.className = "success";
-                currentPosIndex++;
-                isProcessingSwipe = false;
-                setTimeout(loadPosition, 800);
-            } else {
-                msg.innerText = `WRONG! (${pos.eval})`; msg.className = "error";
-                if(score > bestScore) { bestScore = score; localStorage.setItem("swipeChessBestScore", bestScore); }
-                setTimeout(() => {
-                    document.getElementById('final-score').innerText = score;
-                    document.getElementById('game-over-reason').innerText = `Engine Eval: ${pos.eval}`;
-                    updateBestScoreDisplays();
-                    switchScreen('game-over-screen');
-                }, 1000);
-            }
-        }
-
-        function goHome() { updateBestScoreDisplays(); switchScreen('home-screen'); }
-    </script>
-</body>
-</html>
+                if(dx > 0) { whiteIcon.style.opacity = prog; whiteIcon.style.transform = `translate(-50%, -50%) scale(${0.5 + prog})`; blackIcon.
