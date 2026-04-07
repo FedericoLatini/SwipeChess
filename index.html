@@ -185,8 +185,36 @@
 
         function startGame() {
             score = 0; streak = 0; currentPosIndex = 0; isProcessingSwipe = false;
-            shuffleArray(database);
             
+            // --- NUOVA LOGICA: PROGRESSIONE + CASUALITÀ ---
+            let easy = [], medium = [], hard = [];
+            
+            // Dividiamo il database leggendo il valore di Stockfish (eval)
+            database.forEach(pos => {
+                let evalVal = 0;
+                // Se c'è una 'M' è un matto forzato, quindi facilissimo (gli diamo valore 100)
+                if (typeof pos.eval === 'string' && pos.eval.includes('M')) {
+                    evalVal = 100;
+                } else {
+                    // Prende il numero, ignora il segno +/- e lo fa diventare positivo per valutarne la "forza"
+                    evalVal = Math.abs(parseFloat(pos.eval)); 
+                }
+                
+                // Smistamento
+                if (evalVal >= 4.0) easy.push(pos);
+                else if (evalVal >= 1.5) medium.push(pos);
+                else hard.push(pos);
+            });
+
+            // Mischiamo ogni fascia in modo indipendente
+            shuffleArray(easy);
+            shuffleArray(medium);
+            shuffleArray(hard);
+
+            // Ricostruiamo il database: prima tutte le facili, poi le medie, poi le difficili
+            database = [...easy, ...medium, ...hard];
+            // ----------------------------------------------
+
             document.getElementById('score').innerText = "0";
             document.getElementById('game-streak').innerText = "0";
             document.getElementById('message').innerText = "";
@@ -206,7 +234,6 @@
                 board.resize(); loadPosition();
             }, 100);
         }
-
         function loadPosition() {
             if(isProcessingSwipe) return;
             const card = document.getElementById('swipe-card');
