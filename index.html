@@ -179,9 +179,18 @@
         function loadPosition() {
             if(isProcessingSwipe) return;
             const card = document.getElementById('swipe-card');
+            const whiteIcon = document.getElementById('white-king-icon');
+            const blackIcon = document.getElementById('black-king-icon');
+            
             card.style.transition = 'none';
             card.style.transform = 'translateX(0) rotate(0)';
             card.style.opacity = '1';
+            
+            // FIX FANTASMA: Reset istantaneo icone senza transizione
+            whiteIcon.style.transition = 'none';
+            blackIcon.style.transition = 'none';
+            whiteIcon.style.opacity = 0;
+            blackIcon.style.opacity = 0;
             
             if(currentPosIndex >= database.length) { shuffleArray(database); currentPosIndex = 0; }
             const pos = database[currentPosIndex];
@@ -201,12 +210,15 @@
             $('.square-' + fromSq).addClass('highlight-move');
             $('.square-' + toSq).addClass('highlight-move');
             
-            // Inizia a contare il tempo di reazione per questo puzzle specifico
             puzzleStartTime = Date.now();
             
-            setTimeout(() => { card.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease-out'; }, 50);
+            setTimeout(() => { 
+                card.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease-out'; 
+                // Riabilita le transizioni per le icone dopo il reset
+                whiteIcon.style.transition = 'opacity 0.2s';
+                blackIcon.style.transition = 'opacity 0.2s';
+            }, 50);
         }
-
         function setupSwipeListeners() {
             const card = document.getElementById('swipe-card');
             const whiteIcon = document.getElementById('white-king-icon');
@@ -231,6 +243,11 @@
                     card.style.transition = 'all 0.3s ease-in';
                     card.style.transform = `translateX(${(dx > 0 ? 1 : -1) * window.innerWidth}px) rotate(${(dx > 0 ? 1 : -1) * 30}deg)`;
                     card.style.opacity = 0;
+                    
+                    // FIX FANTASMA: Azzera subito durante l'uscita della carta
+                    whiteIcon.style.opacity = 0;
+                    blackIcon.style.opacity = 0;
+                    
                     setTimeout(() => makeGuess(guess), 250);
                 } else {
                     card.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
