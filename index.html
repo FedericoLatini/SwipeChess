@@ -22,9 +22,11 @@
         .btn-primary { background: linear-gradient(135deg, #007aff, #005bb5); color: white; }
         .btn-secondary { background-color: #2c2c2e; color: #ffffff; border: 1px solid #3a3a3c; }
         
-        .stats { display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin: 0 auto 25px auto; font-size: 1.1em; font-weight: 600; background: #1e1e1e; padding: 15px 25px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); border: 1px solid #2c2c2e; z-index: 10; position: relative;}
-        .score-box { display: flex; flex-direction: column; align-items: center; }
-        
+        .stats { display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin: 0 auto 25px auto; font-size: 1em; font-weight: 600; background: #1e1e1e; padding: 15px 20px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); border: 1px solid #2c2c2e; z-index: 10; position: relative;}
+        .score-box { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .score-box div:first-child { font-size: 0.65em; color: #888; margin-bottom: 2px; text-transform: uppercase; }
+        .score-box div:last-child { font-size: 1.2em; color: #fff; }
+
         .game-area-wrapper { position: relative; width: 100%; max-width: 400px; margin: 0 auto; height: 450px; }
         
         #swipe-card { width: 100%; box-sizing: border-box; position: relative; background: #1e1e1e; border-radius: 12px; padding: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); border: 1px solid #2c2c2e; touch-action: none; cursor: grab; z-index: 10; }
@@ -40,6 +42,9 @@
         #message { height: 40px; margin-top: 15px; font-size: 1.4em; font-weight: 800; display: flex; align-items: center; justify-content: center; z-index: 10;}
         .success { color: #32d74b; } .error { color: #ff453a; }
         .highlight-move { box-shadow: inset 0 0 0 50px rgba(50, 215, 75, 0.4) !important; }
+        
+        .points-floating { position: absolute; top: -30px; color: #32d74b; font-weight: bold; font-size: 1.2em; animation: floatUp 1s ease-out forwards; opacity: 0; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-30px) scale(1.2); } }
     </style>
 </head>
 <body>
@@ -48,7 +53,7 @@
         <h1>SWIPE<br>CHESS</h1>
         <div class="subtitle">Eval Instinct Trainer</div>
         <div style="background: #1e1e1e; padding: 20px 40px; border-radius: 20px; border: 1px solid #2c2c2e; margin-bottom: 30px;">
-            <div style="font-size: 0.7em; color: #888; text-transform: uppercase;">PERSONAL BEST</div>
+            <div style="font-size: 0.7em; color: #888; text-transform: uppercase;">HIGH SCORE</div>
             <div id="home-best-score" style="font-size: 2.5em; font-weight: 800; color: #007aff;">0</div>
         </div>
         <button id="start-btn" class="btn btn-primary" onclick="startGame()" disabled>LOADING DB...</button>
@@ -56,8 +61,12 @@
 
     <div id="game-screen" class="screen">
         <div class="stats">
-            <div class="score-box"><div style="font-size:0.7em; color:#888;">SCORE</div><div id="score">0</div></div>
-            <div class="score-box"><div style="font-size:0.7em; color:#888;">BEST</div><div id="game-best-score">0</div></div>
+            <div class="score-box" style="position: relative;">
+                <div>SCORE</div><div id="score">0</div>
+                <div id="floating-points" class="points-floating"></div>
+            </div>
+            <div class="score-box"><div>TIME</div><div id="timer">00:00</div></div>
+            <div class="score-box"><div>STREAK</div><div id="game-streak">0</div></div>
         </div>
         <div class="game-area-wrapper">
             <img id="white-king-icon" class="swipe-feedback-icon" src="https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg">
@@ -76,11 +85,24 @@
 
     <div id="game-over-screen" class="screen">
         <h1 style="color: #ff453a;">GAME OVER</h1>
-        <div id="game-over-reason" style="margin-bottom:20px; font-weight:600;"></div>
-        <div style="background: #1e1e1e; padding: 25px; border-radius: 20px; margin-bottom: 25px; border: 1px solid #2c2c2e; width: 200px;">
+        <div id="game-over-reason" style="margin-bottom:15px; font-weight:600;"></div>
+        
+        <div style="background: #1e1e1e; padding: 20px; border-radius: 20px; border: 1px solid #2c2c2e; width: 250px; margin-bottom: 25px;">
             <div style="font-size: 0.7em; color: #888;">FINAL SCORE</div>
-            <div id="final-score" style="font-size: 3em; font-weight: 800;">0</div>
+            <div id="final-score" style="font-size: 3em; font-weight: 800; color: #007aff; line-height: 1.1;">0</div>
+            
+            <div style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;">
+                <div style="text-align: left;">
+                    <div style="font-size: 0.6em; color: #888;">STREAK</div>
+                    <div id="final-streak" style="font-size: 1.4em; font-weight: 600;">0</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.6em; color: #888;">TIME</div>
+                    <div id="final-time" style="font-size: 1.4em; font-weight: 600;">00:00</div>
+                </div>
+            </div>
         </div>
+
         <button class="btn btn-primary" onclick="startGame()">TRY AGAIN</button>
         <button class="btn btn-secondary" onclick="goHome()">HOME</button>
     </div>
@@ -90,9 +112,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     
     <script>
-        let database = [], currentPosIndex = 0, score = 0, bestScore = parseInt(localStorage.getItem("swipeChessBestScore")) || 0;
+        let database = [], currentPosIndex = 0;
+        let score = 0, streak = 0, bestScore = parseInt(localStorage.getItem("swipeChessHighScore")) || 0;
         let board = null, isDragging = false, startX = 0, currentX = 0, isProcessingSwipe = false;
         
+        let timerInterval = null, secondsElapsed = 0, puzzleStartTime = 0;
+
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -100,43 +125,51 @@
             }
         }
 
+        function formatTime(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60);
+            const s = totalSeconds % 60;
+            return m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
+        }
+
+        function startTimer() {
+            stopTimer(); secondsElapsed = 0;
+            document.getElementById('timer').innerText = "00:00";
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                document.getElementById('timer').innerText = formatTime(secondsElapsed);
+            }, 1000);
+        }
+
+        function stopTimer() { if (timerInterval) clearInterval(timerInterval); }
+
         async function loadDatabase() {
             try {
                 const response = await fetch('./puzzles.json?v=' + Date.now());
-                if (!response.ok) throw new Error("404 Not Found");
                 database = await response.json();
-                
                 document.getElementById('start-btn').innerText = "PLAY NOW";
                 document.getElementById('start-btn').disabled = false;
-            } catch (e) { 
-                document.getElementById('start-btn').innerText = "DB ERROR"; 
-            }
+            } catch (e) { document.getElementById('start-btn').innerText = "DB ERROR"; }
         }
 
         $(document).ready(() => { updateBestScoreDisplays(); setupSwipeListeners(); loadDatabase(); });
 
-        function switchScreen(id) {
-            $('.screen').removeClass('active');
-            $('#' + id).addClass('active');
-        }
+        function switchScreen(id) { $('.screen').removeClass('active'); $('#' + id).addClass('active'); }
 
-        function updateBestScoreDisplays() {
-            document.getElementById('home-best-score').innerText = bestScore;
-            document.getElementById('game-best-score').innerText = bestScore;
-        }
+        function updateBestScoreDisplays() { document.getElementById('home-best-score').innerText = bestScore; }
 
         function startGame() {
-            score = 0; currentPosIndex = 0; isProcessingSwipe = false;
+            score = 0; streak = 0; currentPosIndex = 0; isProcessingSwipe = false;
             shuffleArray(database);
             
             document.getElementById('score').innerText = "0";
+            document.getElementById('game-streak').innerText = "0";
             document.getElementById('message').innerText = "";
             document.getElementById('swipe-card').style.transition = 'none';
             document.getElementById('swipe-card').style.transform = 'translateX(0) rotate(0)';
             document.getElementById('swipe-card').style.opacity = '1';
-            updateBestScoreDisplays();
-            switchScreen('game-screen');
             
+            updateBestScoreDisplays(); switchScreen('game-screen'); startTimer();
+
             setTimeout(() => {
                 if (!board) board = Chessboard('board', { position: 'start', pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png' });
                 board.resize(); loadPosition();
@@ -149,13 +182,8 @@
             card.style.transition = 'none';
             card.style.transform = 'translateX(0) rotate(0)';
             card.style.opacity = '1';
-            document.getElementById('white-king-icon').style.opacity = 0;
-            document.getElementById('black-king-icon').style.opacity = 0;
             
-            if(currentPosIndex >= database.length) { 
-                shuffleArray(database); 
-                currentPosIndex = 0; 
-            }
+            if(currentPosIndex >= database.length) { shuffleArray(database); currentPosIndex = 0; }
             const pos = database[currentPosIndex];
             
             const cleanMove = pos.lastMove.replace('-', '').trim();
@@ -165,19 +193,16 @@
             
             const game = new Chess(pos.fen);
             const moveResult = game.move({ from: fromSq, to: toSq, promotion: promo });
-            
-            if (moveResult) {
-                board.position(game.fen(), false);
-            } else {
-                board.position(pos.fen, false);
-            }
+            if (moveResult) board.position(game.fen(), false); else board.position(pos.fen, false);
             
             document.getElementById('last-move').innerHTML = `Last Move: <b>${fromSq}-${toSq}</b>`;
             document.getElementById('message').style.opacity = 0;
-            
             $('.square-55d63').removeClass('highlight-move');
             $('.square-' + fromSq).addClass('highlight-move');
             $('.square-' + toSq).addClass('highlight-move');
+            
+            // Inizia a contare il tempo di reazione per questo puzzle specifico
+            puzzleStartTime = Date.now();
             
             setTimeout(() => { card.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease-out'; }, 50);
         }
@@ -214,7 +239,6 @@
                     whiteIcon.style.opacity = 0; blackIcon.style.opacity = 0;
                 }
             };
-
             card.addEventListener('touchstart', e => onStart(e.touches[0].clientX), {passive:true});
             card.addEventListener('touchmove', e => { if(e.cancelable) e.preventDefault(); onMove(e.touches[0].clientX); }, {passive:false});
             card.addEventListener('touchend', onEnd);
@@ -223,30 +247,57 @@
             window.addEventListener('mouseup', onEnd);
         }
 
+        function showFloatingPoints(points) {
+            const floatingEl = document.getElementById('floating-points');
+            floatingEl.innerText = `+${points}`;
+            floatingEl.style.animation = 'none';
+            void floatingEl.offsetWidth; 
+            floatingEl.style.animation = 'floatUp 0.8s ease-out forwards';
+        }
+
         function makeGuess(guess) {
             const pos = database[currentPosIndex];
             const msg = document.getElementById('message');
             msg.style.opacity = 1;
             
+            // Calcolo del tempo di reazione (Speed Bonus)
+            let solveTimeInSeconds = (Date.now() - puzzleStartTime) / 1000;
+            
             if(guess === pos.correctAnswer) {
-                score++; document.getElementById('score').innerText = score;
-                msg.innerText = `CORRECT! 🔥 (${pos.eval})`; msg.className = "success";
+                // Calcola punti
+                let speedBonus = Math.max(0, Math.round((8 - solveTimeInSeconds) * 20));
+                let pointsEarned = 100 + speedBonus;
+                
+                score += pointsEarned;
+                streak++;
+                
+                document.getElementById('score').innerText = score;
+                document.getElementById('game-streak').innerText = streak;
+                
+                showFloatingPoints(pointsEarned);
+                
+                msg.innerText = `CORRECT! 🔥`; msg.className = "success";
                 currentPosIndex++;
                 isProcessingSwipe = false;
-                setTimeout(loadPosition, 800);
+                setTimeout(loadPosition, 700);
             } else {
-                msg.innerText = `WRONG! (${pos.eval})`; msg.className = "error";
-                if(score > bestScore) { bestScore = score; localStorage.setItem("swipeChessBestScore", bestScore); }
+                stopTimer();
+                msg.innerText = `WRONG!`; msg.className = "error";
+                
+                if(score > bestScore) { bestScore = score; localStorage.setItem("swipeChessHighScore", bestScore); }
+                
                 setTimeout(() => {
                     document.getElementById('final-score').innerText = score;
-                    document.getElementById('game-over-reason').innerText = `Engine Eval: ${pos.eval}`;
+                    document.getElementById('final-streak').innerText = streak;
+                    document.getElementById('final-time').innerText = formatTime(secondsElapsed);
+                    document.getElementById('game-over-reason').innerText = `Stockfish Eval: ${pos.eval}`;
                     updateBestScoreDisplays();
                     switchScreen('game-over-screen');
                 }, 1000);
             }
         }
 
-        function goHome() { updateBestScoreDisplays(); switchScreen('home-screen'); }
+        function goHome() { stopTimer(); updateBestScoreDisplays(); switchScreen('home-screen'); }
     </script>
 </body>
 </html>
