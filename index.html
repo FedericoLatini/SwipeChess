@@ -27,12 +27,13 @@
         .btn-primary:active { transform: scale(0.95); box-shadow: 0 0 10px rgba(255, 0, 170, 0.6); }
         .btn-secondary { background-color: #0c0d14; color: #ff00aa; border: 2px solid #ff00aa; box-shadow: 0 0 15px rgba(255, 0, 170, 0.2) inset; }
         
-        .stats { display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin: 0 auto 25px auto; font-size: 1em; font-weight: 600; background: #0c0d14; padding: 15px 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #1a1c29; z-index: 10; position: relative;}
+        /* HUD FLUTTUANTE STILE VETRO */
+        .stats { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); display: flex; justify-content: space-between; width: 90%; max-width: 400px; font-size: 1em; font-weight: 600; background: rgba(12, 13, 20, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 15px 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid rgba(255, 255, 255, 0.05); z-index: 1000; box-sizing: border-box; }
         .score-box { flex: 1; display: flex; flex-direction: column; align-items: center; }
         .score-box div:first-child { font-size: 0.65em; color: #00e5ff; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px;}
         .score-box div:last-child { font-size: 1.3em; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
 
-        .game-area-wrapper { position: relative; width: 100%; max-width: 400px; margin: 0 auto; height: 500px; }
+        .game-area-wrapper { position: relative; width: 100%; max-width: 400px; margin: 0 auto; height: 500px; display: flex; align-items: center; justify-content: center; }
         
         #swipe-card { width: 100%; box-sizing: border-box; position: relative; background: #0c0d14; border-radius: 12px; padding: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 0 1px #1a1c29; touch-action: none; cursor: grab; z-index: 10; }
         #board { width: 100%; border-radius: 4px; overflow: hidden; pointer-events: none; border: 2px solid #050508; }
@@ -46,16 +47,18 @@
         .badge-black { background: #111218; color: #8a8d9e; border: 1px solid #232533; }
         .badge-white { background: #f0f0f0; color: #000; border: 1px solid #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
         
-        #message { height: 40px; margin-top: 15px; font-size: 1.6em; font-weight: 800; display: flex; align-items: center; justify-content: center; z-index: 10; letter-spacing: 1px; text-transform: uppercase; }
+        /* PUNTI AL CENTRO DELLO SCHERMO */
+        .points-floating { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00e5ff; font-weight: 800; font-size: 3.5em; animation: floatUpCenter 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0; text-shadow: 0 0 20px rgba(0, 229, 255, 0.8); pointer-events: none; z-index: 500; }
+        @keyframes floatUpCenter { 0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); } 20% { transform: translate(-50%, -60%) scale(1.2); } 100% { opacity: 0; transform: translate(-50%, -120px) scale(1); } }
+
+        /* MESSAGGI FISSATI IN BASSO */
+        #message { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); height: 40px; font-size: 1.6em; font-weight: 800; display: flex; align-items: center; justify-content: center; z-index: 1000; letter-spacing: 1px; text-transform: uppercase; width: 100%; pointer-events: none; }
         .success { color: #00e5ff; text-shadow: 0 0 15px rgba(0, 229, 255, 0.6); } 
         .error { color: #ff00aa; text-shadow: 0 0 15px rgba(255, 0, 170, 0.6); }
         .highlight-move { box-shadow: inset 0 0 0 50px rgba(0, 229, 255, 0.3) !important; }
 
         .brag-text { font-size: 0.85em; color: #ff00aa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; font-weight: 600; text-shadow: 0 0 8px rgba(255, 0, 170, 0.4); animation: pulseText 2s infinite; }
         @keyframes pulseText { 0% { opacity: 0.5; } 50% { opacity: 1; transform: scale(1.02); } 100% { opacity: 0.5; } }
-        
-        .points-floating { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); color: #00e5ff; font-weight: 800; font-size: 1.4em; animation: floatUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0; text-shadow: 0 0 10px rgba(0, 229, 255, 0.6); pointer-events: none; }
-        @keyframes floatUp { 0% { opacity: 1; transform: translate(-50%, 0) scale(0.5); } 20% { transform: translate(-50%, -10px) scale(1.2); } 100% { opacity: 0; transform: translate(-50%, -40px) scale(1); } }
     </style>
 </head>
 <body>
@@ -76,14 +79,15 @@
     </div>
 
     <div id="game-screen" class="screen">
+        
         <div class="stats">
-            <div class="score-box" style="position: relative;">
-                <div>SCORE</div><div id="score">0</div>
-                <div id="floating-points" class="points-floating"></div>
-            </div>
+            <div class="score-box"><div>SCORE</div><div id="score">0</div></div>
             <div class="score-box"><div>TIME</div><div id="timer">00:00</div></div>
             <div class="score-box"><div>STREAK</div><div id="game-streak">0</div></div>
         </div>
+
+        <div id="floating-points" class="points-floating"></div>
+
         <div class="game-area-wrapper">
             <img id="white-king-icon" class="swipe-feedback-icon" src="https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg">
             <img id="black-king-icon" class="swipe-feedback-icon" src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg">
@@ -108,6 +112,7 @@
                 <div id="last-move" style="margin-top:10px; color:#555;">Last Move: -</div>
             </div>
         </div>
+        
         <div id="message"></div>
     </div>
 
@@ -188,11 +193,12 @@
         function startGame() {
             score = 0; streak = 0; currentPosIndex = 0; isProcessingSwipe = false;
             
+            // --- LOGICA DI SMISTAMENTO (Facili -> Medie -> Difficili) ---
             let easy = [], medium = [], hard = [];
             database.forEach(pos => {
                 let evalVal = 0;
                 if (typeof pos.eval === 'string' && pos.eval.includes('M')) {
-                    evalVal = 100;
+                    evalVal = 100; // I matti valgono 100 per finire sicuri nelle "Facili"
                 } else {
                     evalVal = Math.abs(parseFloat(pos.eval)); 
                 }
@@ -203,6 +209,7 @@
 
             shuffleArray(easy); shuffleArray(medium); shuffleArray(hard);
             database = [...easy, ...medium, ...hard];
+            // ------------------------------------------------------------
 
             document.getElementById('score').innerText = "0";
             document.getElementById('game-streak').innerText = "0";
@@ -284,6 +291,122 @@
                 if(!isDragging || isProcessingSwipe) return;
                 currentX = x; currentY = y; 
                 let dx = currentX - startX;
-                let dy = currentY - startY; // Ora misuriamo il movimento Verticale!
+                let dy = currentY - startY; 
                 
-                // La
+                card.style.transform = `translate(${dx}px, ${dy}px) rotate(${dx * 0.03}deg)`;
+                card.style.opacity = 1 - Math.min(Math.abs(dy) / 200, 0.7);
+                
+                let prog = Math.min(Math.abs(dy) / 100, 1);
+                
+                if(dy > 0) { 
+                    whiteIcon.style.opacity = prog; 
+                    whiteIcon.style.transform = `translate(-50%, -50%) scale(${0.5 + prog})`; 
+                    blackIcon.style.opacity = 0; 
+                } else { 
+                    blackIcon.style.opacity = prog; 
+                    blackIcon.style.transform = `translate(-50%, -50%) scale(${0.5 + prog})`; 
+                    whiteIcon.style.opacity = 0; 
+                }
+            };
+            
+            const onEnd = () => {
+                if(!isDragging || isProcessingSwipe) return; isDragging = false;
+                let dx = currentX - startX;
+                let dy = currentY - startY;
+                
+                if(Math.abs(dy) > 80) {
+                    isProcessingSwipe = true;
+                    let guess = dy > 0 ? 'white' : 'black'; 
+                    
+                    card.style.transition = 'all 0.3s ease-in';
+                    card.style.transform = `translate(${dx}px, ${(dy > 0 ? 1 : -1) * window.innerHeight}px) rotate(${dx * 0.05}deg)`;
+                    card.style.opacity = 0;
+                    
+                    whiteIcon.style.opacity = 0;
+                    blackIcon.style.opacity = 0;
+
+                    setTimeout(() => makeGuess(guess), 250);
+                } else {
+                    card.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    card.style.transform = 'translate(0, 0) rotate(0)';
+                    card.style.opacity = 1;
+                    whiteIcon.style.opacity = 0; blackIcon.style.opacity = 0;
+                }
+            };
+
+            card.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive:true});
+            card.addEventListener('touchmove', e => { if(e.cancelable) e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive:false});
+            card.addEventListener('touchend', onEnd);
+            card.addEventListener('mousedown', e => onStart(e.pageX, e.pageY));
+            window.addEventListener('mousemove', e => onMove(e.pageX, e.pageY));
+            window.addEventListener('mouseup', onEnd);
+        }
+
+        function showFloatingPoints(points) {
+            const floatingEl = document.getElementById('floating-points');
+            floatingEl.innerText = `+${points}`;
+            floatingEl.style.animation = 'none';
+            void floatingEl.offsetWidth; 
+            floatingEl.style.animation = 'floatUpCenter 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+        }
+
+        function makeGuess(guess) {
+            const pos = database[currentPosIndex];
+            const msg = document.getElementById('message');
+            msg.style.opacity = 1;
+            
+            let solveTimeInSeconds = (Date.now() - puzzleStartTime) / 1000;
+            
+            if(guess === pos.correctAnswer) {
+                let speedBonus = Math.max(0, Math.round((30 - solveTimeInSeconds) * 15));
+                let pointsEarned = 100 + speedBonus;
+                
+                score += pointsEarned;
+                streak++;
+                
+                document.getElementById('score').innerText = score;
+                document.getElementById('game-streak').innerText = streak;
+                
+                showFloatingPoints(pointsEarned);
+                
+                msg.innerText = `CORRECT! 🔥`; msg.className = "success";
+                currentPosIndex++;
+                isProcessingSwipe = false;
+                setTimeout(loadPosition, 700);
+            } else {
+                stopTimer();
+                msg.innerText = `WRONG!`; msg.className = "error";
+                
+                if(score > bestScore) { bestScore = score; localStorage.setItem("swipeChessHighScore", bestScore); }
+                
+                // --- CREAZIONE LINK LICHESS ---
+                const cleanMove = pos.lastMove.replace('-', '').trim();
+                const fromSq = cleanMove.substring(0, 2);
+                const toSq = cleanMove.substring(2, 4);
+                const promo = cleanMove.length > 4 ? cleanMove.substring(4, 5) : undefined;
+                
+                const gameLink = new Chess(pos.fen);
+                const moveResult = gameLink.move({ from: fromSq, to: toSq, promotion: promo });
+                const finalFen = moveResult ? gameLink.fen() : pos.fen;
+                
+                const lichessUrl = `https://lichess.org/analysis/standard/${finalFen.replace(/ /g, '_')}`;
+                
+                setTimeout(() => {
+                    document.getElementById('final-score').innerText = score;
+                    document.getElementById('final-streak').innerText = streak;
+                    document.getElementById('final-time').innerText = formatTime(secondsElapsed);
+                    
+                    document.getElementById('game-over-reason').innerHTML = `
+                        <a href="${lichessUrl}" target="_blank" style="color: #00e5ff; text-decoration: none; border-bottom: 1px dashed #00e5ff; padding-bottom: 2px;">
+                            Engine Eval: ${pos.eval} 🔍
+                        </a>
+                    `;
+                    
+                    updateBestScoreDisplays();
+                    switchScreen('game-over-screen');
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
