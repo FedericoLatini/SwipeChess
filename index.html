@@ -18,35 +18,31 @@
         .screen.active { display: flex; animation: slideUpFade 0.4s ease-out forwards; }
         @keyframes slideUpFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* TESTI NEON MAGENTA-CIANO */
         h1 { font-size: 3.8em; margin-bottom: 5px; font-weight: 800; background: linear-gradient(90deg, #ff00aa, #00e5ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; line-height: 1; text-shadow: 0 0 20px rgba(0, 229, 255, 0.2); text-transform: uppercase; }
         .subtitle { font-size: 1.1em; color: #00e5ff; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 4px; font-weight: 600; text-shadow: 0 0 10px rgba(0, 229, 255, 0.5); }
         
-        /* PULSANTI */
         .btn { width: 100%; max-width: 280px; padding: 18px; font-size: 18px; cursor: pointer; border: none; border-radius: 50px; font-weight: 800; transition: all 0.2s ease; margin: 10px 0; text-transform: uppercase; letter-spacing: 2px; outline: none; }
         .btn:disabled { background: #1a1c29; color: #444; cursor: not-allowed; box-shadow: none; }
         .btn-primary { background: linear-gradient(135deg, #ff00aa, #00e5ff); color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); box-shadow: 0 0 20px rgba(0, 229, 255, 0.3); }
         .btn-primary:active { transform: scale(0.95); box-shadow: 0 0 10px rgba(255, 0, 170, 0.6); }
         .btn-secondary { background-color: #0c0d14; color: #ff00aa; border: 2px solid #ff00aa; box-shadow: 0 0 15px rgba(255, 0, 170, 0.2) inset; }
         
-        /* PANNELLI */
         .stats { display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin: 0 auto 25px auto; font-size: 1em; font-weight: 600; background: #0c0d14; padding: 15px 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #1a1c29; z-index: 10; position: relative;}
         .score-box { flex: 1; display: flex; flex-direction: column; align-items: center; }
         .score-box div:first-child { font-size: 0.65em; color: #00e5ff; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px;}
         .score-box div:last-child { font-size: 1.3em; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
 
-        .game-area-wrapper { position: relative; width: 100%; max-width: 400px; margin: 0 auto; height: 450px; }
+        .game-area-wrapper { position: relative; width: 100%; max-width: 400px; margin: 0 auto; height: 500px; }
         
         #swipe-card { width: 100%; box-sizing: border-box; position: relative; background: #0c0d14; border-radius: 12px; padding: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 0 1px #1a1c29; touch-action: none; cursor: grab; z-index: 10; }
         #board { width: 100%; border-radius: 4px; overflow: hidden; pointer-events: none; border: 2px solid #050508; }
         
-        /* FEEDBACK PURAMENTE SEMANTICO (BIANCO E NERO) */
-        .swipe-feedback-icon { position: absolute; top: 40%; left: 50%; width: 140px; height: 140px; transform: translate(-50%, -50%) scale(0.5); opacity: 0; pointer-events: none; z-index: 100; }
+        .swipe-feedback-icon { position: absolute; top: 50%; left: 50%; width: 140px; height: 140px; transform: translate(-50%, -50%) scale(0.5); opacity: 0; pointer-events: none; z-index: 100; }
         #white-king-icon { filter: drop-shadow(0px 0px 30px rgba(255,255,255,1)); }
         #black-king-icon { filter: drop-shadow(0px 0px 30px rgba(0,0,0,1)) drop-shadow(0px 0px 8px rgba(200, 0, 0, 0.5)); }
         
         .badge { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border-radius: 20px; letter-spacing: 1px; font-size: 0.85em; text-transform: uppercase; font-weight: 800;}
-        .badge svg { width: 16px; height: 16px; stroke-width: 3px; }
+        .badge svg { width: 20px; height: 20px; stroke-width: 3px; }
         .badge-black { background: #111218; color: #8a8d9e; border: 1px solid #232533; }
         .badge-white { background: #f0f0f0; color: #000; border: 1px solid #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
         
@@ -92,17 +88,23 @@
             <img id="white-king-icon" class="swipe-feedback-icon" src="https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg">
             <img id="black-king-icon" class="swipe-feedback-icon" src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg">
             <div id="swipe-card">
-                <div id="board"></div>
-              <div style="display:flex; justify-content:space-between; margin-top:15px;">
-                    <span class="badge badge-white" style="text-align: left; line-height: 1.1;">
-                        <div>WHITE<br><span style="font-size: 0.7em; opacity: 0.7;">IS BETTER</span></div> 
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                    </span>
-                    <span class="badge badge-black" style="text-align: right; line-height: 1.1;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> 
+                
+                <div style="display:flex; justify-content:center; margin-bottom:15px;">
+                    <span class="badge badge-black" style="text-align: center; line-height: 1.1; width: 160px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg> 
                         <div>BLACK<br><span style="font-size: 0.7em; opacity: 0.7;">IS BETTER</span></div>
                     </span>
                 </div>
+
+                <div id="board"></div>
+
+                <div style="display:flex; justify-content:center; margin-top:15px;">
+                    <span class="badge badge-white" style="text-align: center; line-height: 1.1; width: 160px;">
+                        <div>WHITE<br><span style="font-size: 0.7em; opacity: 0.7;">IS BETTER</span></div> 
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+                    </span>
+                </div>
+                
                 <div id="last-move" style="margin-top:10px; color:#555;">Last Move: -</div>
             </div>
         </div>
@@ -141,7 +143,7 @@
     
     <script>
         let database = [], currentPosIndex = 0, score = 0, streak = 0, bestScore = parseInt(localStorage.getItem("swipeChessHighScore")) || 0;
-        let board = null, isDragging = false, startX = 0, currentX = 0, isProcessingSwipe = false;
+        let board = null, isDragging = false, startX = 0, startY = 0, currentX = 0, currentY = 0, isProcessingSwipe = false;
         let timerInterval = null, secondsElapsed = 0, puzzleStartTime = 0;
 
         function shuffleArray(array) {
@@ -186,40 +188,27 @@
         function startGame() {
             score = 0; streak = 0; currentPosIndex = 0; isProcessingSwipe = false;
             
-            // --- NUOVA LOGICA: PROGRESSIONE + CASUALITÀ ---
             let easy = [], medium = [], hard = [];
-            
-            // Dividiamo il database leggendo il valore di Stockfish (eval)
             database.forEach(pos => {
                 let evalVal = 0;
-                // Se c'è una 'M' è un matto forzato, quindi facilissimo (gli diamo valore 100)
                 if (typeof pos.eval === 'string' && pos.eval.includes('M')) {
                     evalVal = 100;
                 } else {
-                    // Prende il numero, ignora il segno +/- e lo fa diventare positivo per valutarne la "forza"
                     evalVal = Math.abs(parseFloat(pos.eval)); 
                 }
-                
-                // Smistamento
                 if (evalVal >= 4.0) easy.push(pos);
                 else if (evalVal >= 1.5) medium.push(pos);
                 else hard.push(pos);
             });
 
-            // Mischiamo ogni fascia in modo indipendente
-            shuffleArray(easy);
-            shuffleArray(medium);
-            shuffleArray(hard);
-
-            // Ricostruiamo il database: prima tutte le facili, poi le medie, poi le difficili
+            shuffleArray(easy); shuffleArray(medium); shuffleArray(hard);
             database = [...easy, ...medium, ...hard];
-            // ----------------------------------------------
 
             document.getElementById('score').innerText = "0";
             document.getElementById('game-streak').innerText = "0";
             document.getElementById('message').innerText = "";
             document.getElementById('swipe-card').style.transition = 'none';
-            document.getElementById('swipe-card').style.transform = 'translateX(0) rotate(0)';
+            document.getElementById('swipe-card').style.transform = 'translate(0, 0) rotate(0)';
             document.getElementById('swipe-card').style.opacity = '1';
             
             document.getElementById('white-king-icon').style.opacity = 0;
@@ -234,6 +223,7 @@
                 board.resize(); loadPosition();
             }, 100);
         }
+
         function loadPosition() {
             if(isProcessingSwipe) return;
             const card = document.getElementById('swipe-card');
@@ -241,7 +231,7 @@
             const bIcon = document.getElementById('black-king-icon');
             
             card.style.transition = 'none';
-            card.style.transform = 'translateX(0) rotate(0)';
+            card.style.transform = 'translate(0, 0) rotate(0)';
             card.style.opacity = '1';
             
             wIcon.style.transition = 'none';
@@ -283,117 +273,17 @@
             const whiteIcon = document.getElementById('white-king-icon');
             const blackIcon = document.getElementById('black-king-icon');
 
-            const onStart = (x) => { if(isProcessingSwipe) return; isDragging = true; startX = x; card.style.transition = 'none'; };
-            const onMove = (x) => {
+            const onStart = (x, y) => { 
+                if(isProcessingSwipe) return; 
+                isDragging = true; 
+                startX = x; startY = y; 
+                card.style.transition = 'none'; 
+            };
+            
+            const onMove = (x, y) => {
                 if(!isDragging || isProcessingSwipe) return;
-                currentX = x; let dx = currentX - startX;
-                card.style.transform = `translateX(${dx}px) rotate(${dx * 0.05}deg)`;
-                card.style.opacity = 1 - Math.min(Math.abs(dx) / 150, 0.7);
-                let prog = Math.min(Math.abs(dx) / 100, 1);
-                if(dx > 0) { whiteIcon.style.opacity = prog; whiteIcon.style.transform = `translate(-50%, -50%) scale(${0.5 + prog})`; blackIcon.style.opacity = 0; }
-                else { blackIcon.style.opacity = prog; blackIcon.style.transform = `translate(-50%, -50%) scale(${0.5 + prog})`; whiteIcon.style.opacity = 0; }
-            };
-            const onEnd = () => {
-                if(!isDragging || isProcessingSwipe) return; isDragging = false;
+                currentX = x; currentY = y; 
                 let dx = currentX - startX;
-                if(Math.abs(dx) > 80) {
-                    isProcessingSwipe = true;
-                    let guess = dx > 0 ? 'white' : 'black';
-                    card.style.transition = 'all 0.3s ease-in';
-                    card.style.transform = `translateX(${(dx > 0 ? 1 : -1) * window.innerWidth}px) rotate(${(dx > 0 ? 1 : -1) * 30}deg)`;
-                    card.style.opacity = 0;
-                    
-                    whiteIcon.style.opacity = 0;
-                    blackIcon.style.opacity = 0;
-
-                    setTimeout(() => makeGuess(guess), 250);
-                } else {
-                    card.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                    card.style.transform = 'translateX(0) rotate(0)';
-                    card.style.opacity = 1;
-                    whiteIcon.style.opacity = 0; blackIcon.style.opacity = 0;
-                }
-            };
-
-            card.addEventListener('touchstart', e => onStart(e.touches[0].clientX), {passive:true});
-            card.addEventListener('touchmove', e => { if(e.cancelable) e.preventDefault(); onMove(e.touches[0].clientX); }, {passive:false});
-            card.addEventListener('touchend', onEnd);
-            card.addEventListener('mousedown', e => onStart(e.pageX));
-            window.addEventListener('mousemove', e => onMove(e.pageX));
-            window.addEventListener('mouseup', onEnd);
-        }
-
-        function showFloatingPoints(points) {
-            const floatingEl = document.getElementById('floating-points');
-            floatingEl.innerText = `+${points}`;
-            floatingEl.style.animation = 'none';
-            void floatingEl.offsetWidth; 
-            floatingEl.style.animation = 'floatUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
-        }
-
-        function makeGuess(guess) {
-            const pos = database[currentPosIndex];
-            const msg = document.getElementById('message');
-            msg.style.opacity = 1;
-            
-            let solveTimeInSeconds = (Date.now() - puzzleStartTime) / 1000;
-            
-            if(guess === pos.correctAnswer) {
-                let speedBonus = Math.max(0, Math.round((30 - solveTimeInSeconds) * 15));
-                let pointsEarned = 100 + speedBonus;
+                let dy = currentY - startY; // Ora misuriamo il movimento Verticale!
                 
-                score += pointsEarned;
-                streak++;
-                
-                document.getElementById('score').innerText = score;
-                document.getElementById('game-streak').innerText = streak;
-                
-                showFloatingPoints(pointsEarned);
-                
-                msg.innerText = `CORRECT! 🔥`; msg.className = "success";
-                currentPosIndex++;
-                isProcessingSwipe = false;
-                setTimeout(loadPosition, 700);
-            } else {
-                stopTimer();
-                msg.innerText = `WRONG!`; msg.className = "error";
-                
-                if(score > bestScore) { bestScore = score; localStorage.setItem("swipeChessHighScore", bestScore); }
-                
-                // --- CREAZIONE LINK LICHESS ---
-                // 1. Calcoliamo la posizione esatta che l'utente stava guardando
-                const cleanMove = pos.lastMove.replace('-', '').trim();
-                const fromSq = cleanMove.substring(0, 2);
-                const toSq = cleanMove.substring(2, 4);
-                const promo = cleanMove.length > 4 ? cleanMove.substring(4, 5) : undefined;
-                
-                const gameLink = new Chess(pos.fen);
-                const moveResult = gameLink.move({ from: fromSq, to: toSq, promotion: promo });
-                const finalFen = moveResult ? gameLink.fen() : pos.fen;
-                
-                // 2. Creiamo l'URL di Lichess Analysis (Lichess vuole gli underscore al posto degli spazi nei FEN)
-                const lichessUrl = `https://lichess.org/analysis/standard/${finalFen.replace(/ /g, '_')}`;
-                // ------------------------------
-                
-                setTimeout(() => {
-                    document.getElementById('final-score').innerText = score;
-                    document.getElementById('final-streak').innerText = streak;
-                    document.getElementById('final-time').innerText = formatTime(secondsElapsed);
-                    
-                    // Inseriamo il link interattivo al posto del testo semplice
-                    document.getElementById('game-over-reason').innerHTML = `
-                        <a href="${lichessUrl}" target="_blank" style="color: #00e5ff; text-decoration: none; border-bottom: 1px dashed #00e5ff; padding-bottom: 2px;">
-                            Engine Eval: ${pos.eval} 🔍
-                        </a>
-                    `;
-                    
-                    updateBestScoreDisplays();
-                    switchScreen('game-over-screen');
-                }, 1000);
-            }
-        }
-
-        function goHome() { stopTimer(); updateBestScoreDisplays(); switchScreen('home-screen'); }
-    </script>
-</body>
-</html>
+                // La
