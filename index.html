@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SwipeChess</title>
-    
-    <link rel="icon" type="image/png" href="Logo.png">
+    <title>SwapChess</title> <link rel="icon" type="image/png" href="Logo.png">
     <link rel="apple-touch-icon" href="Logo.png">
     <meta name="theme-color" content="#050508">
     
@@ -21,37 +19,38 @@
         h1 { font-size: 3.8em; margin-bottom: 5px; font-weight: 800; background: linear-gradient(90deg, #ff00aa, #00e5ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; line-height: 1; text-shadow: 0 0 20px rgba(0, 229, 255, 0.2); text-transform: uppercase; }
         .subtitle { font-size: 1.1em; color: #00e5ff; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 4px; font-weight: 600; text-shadow: 0 0 10px rgba(0, 229, 255, 0.5); }
         
-        .btn { width: 100%; max-width: 280px; padding: 18px; font-size: 18px; cursor: pointer; border: none; border-radius: 50px; font-weight: 800; transition: all 0.2s ease; margin: 10px 0; text-transform: uppercase; letter-spacing: 2px; outline: none; }
+        .btn { width: 100%; padding: 18px; font-size: 18px; cursor: pointer; border: none; border-radius: 50px; font-weight: 800; transition: all 0.2s ease; margin: 10px 0; text-transform: uppercase; letter-spacing: 2px; outline: none; }
         .btn:disabled { background: #1a1c29; color: #444; cursor: not-allowed; box-shadow: none; }
-        .btn-primary { background: linear-gradient(135deg, #ff00aa, #00e5ff); color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); box-shadow: 0 0 20px rgba(0, 229, 255, 0.3); }
+        .btn-primary { background: linear-gradient(135deg, #ff00aa, #00e5ff); color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); box-shadow: 0 0 20px rgba(0, 229, 255, 0.3); max-width: 280px; }
         .btn-primary:active { transform: scale(0.95); box-shadow: 0 0 10px rgba(255, 0, 170, 0.6); }
-        .btn-secondary { background-color: #0c0d14; color: #ff00aa; border: 2px solid #ff00aa; box-shadow: 0 0 15px rgba(255, 0, 170, 0.2) inset; }
+        .btn-secondary { background-color: #0c0d14; color: #ff00aa; border: 2px solid #ff00aa; box-shadow: 0 0 15px rgba(255, 0, 170, 0.2) inset; max-width: 280px; }
         
-        /* HUD FLUTTUANTE STILE VETRO */
+        /* BOTTONI DI GIOCO AFFIANCATI */
+        .action-buttons { display: flex; gap: 15px; width: 100%; max-width: 400px; margin-top: 15px; }
+        .btn-game { flex: 1; padding: 18px 10px; font-size: 16px; border-radius: 15px; }
+        .btn-keep { background: #0c0d14; color: #00e5ff; border: 2px solid #00e5ff; box-shadow: 0 0 15px rgba(0, 229, 255, 0.2) inset; }
+        .btn-keep:active { transform: scale(0.95); background: #00e5ff; color: #000; }
+        .btn-swap { background: #0c0d14; color: #ff00aa; border: 2px solid #ff00aa; box-shadow: 0 0 15px rgba(255, 0, 170, 0.2) inset; }
+        .btn-swap:active { transform: scale(0.95); background: #ff00aa; color: #000; }
+
+        /* HUD FLUTTUANTE */
         .stats { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); display: flex; justify-content: space-between; width: 90%; max-width: 400px; font-size: 1em; font-weight: 600; background: rgba(12, 13, 20, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 15px 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid rgba(255, 255, 255, 0.05); z-index: 1000; box-sizing: border-box; }
         .score-box { flex: 1; display: flex; flex-direction: column; align-items: center; }
         .score-box div:first-child { font-size: 0.65em; color: #00e5ff; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px;}
         .score-box div:last-child { font-size: 1.3em; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
 
-        .game-area-wrapper { position: relative; width: 100%; max-width: 400px; margin: 0 auto; height: 500px; display: flex; align-items: center; justify-content: center; }
+        .game-area-wrapper { position: relative; width: 100%; max-width: 400px; margin: 0 auto; height: 500px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 60px; }
         
-        #swipe-card { width: 100%; box-sizing: border-box; position: relative; background: #0c0d14; border-radius: 12px; padding: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 0 1px #1a1c29; touch-action: none; cursor: grab; z-index: 10; }
+        #board-container { width: 100%; box-sizing: border-box; background: #0c0d14; border-radius: 12px; padding: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 0 1px #1a1c29; z-index: 10; }
         #board { width: 100%; border-radius: 4px; overflow: hidden; pointer-events: none; border: 2px solid #050508; }
         
-        .swipe-feedback-icon { position: absolute; top: 50%; left: 50%; width: 140px; height: 140px; transform: translate(-50%, -50%) scale(0.5); opacity: 0; pointer-events: none; z-index: 100; }
-        #white-king-icon { filter: drop-shadow(0px 0px 30px rgba(255,255,255,1)); }
-        #black-king-icon { filter: drop-shadow(0px 0px 30px rgba(0,0,0,1)) drop-shadow(0px 0px 8px rgba(200, 0, 0, 0.5)); }
-        
-        .badge { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border-radius: 20px; letter-spacing: 1px; font-size: 0.85em; text-transform: uppercase; font-weight: 800;}
-        .badge svg { width: 20px; height: 20px; stroke-width: 3px; }
-        .badge-black { background: #111218; color: #8a8d9e; border: 1px solid #232533; }
-        .badge-white { background: #f0f0f0; color: #000; border: 1px solid #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); }
-        
-        /* PUNTI AL CENTRO DELLO SCHERMO */
-        .points-floating { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00e5ff; font-weight: 800; font-size: 3.5em; animation: floatUpCenter 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0; text-shadow: 0 0 20px rgba(0, 229, 255, 0.8); pointer-events: none; z-index: 500; }
+        /* PROMPT TESTUALE */
+        #game-prompt { font-size: 1.1em; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px; line-height: 1.3; }
+
+        /* PUNTI FLUTTUANTI */
+        .points-floating { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); color: #00e5ff; font-weight: 800; font-size: 3.5em; animation: floatUpCenter 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0; text-shadow: 0 0 20px rgba(0, 229, 255, 0.8); pointer-events: none; z-index: 500; }
         @keyframes floatUpCenter { 0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); } 20% { transform: translate(-50%, -60%) scale(1.2); } 100% { opacity: 0; transform: translate(-50%, -120px) scale(1); } }
 
-        /* MESSAGGI FISSATI IN BASSO */
         #message { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); height: 40px; font-size: 1.6em; font-weight: 800; display: flex; align-items: center; justify-content: center; z-index: 1000; letter-spacing: 1px; text-transform: uppercase; width: 100%; pointer-events: none; }
         .success { color: #00e5ff; text-shadow: 0 0 15px rgba(0, 229, 255, 0.6); } 
         .error { color: #ff00aa; text-shadow: 0 0 15px rgba(255, 0, 170, 0.6); }
@@ -64,9 +63,9 @@
 <body>
 
     <div id="home-screen" class="screen active">
-        <img src="Logo.png" alt="SwipeChess Logo" style="width: 130px; height: 130px; border-radius: 30px; margin-bottom: 10px; box-shadow: -15px 0 30px rgba(255, 0, 170, 0.25), 15px 0 30px rgba(0, 229, 255, 0.25);">
+        <img src="Logo.png" alt="SwapChess Logo" style="width: 130px; height: 130px; border-radius: 30px; margin-bottom: 10px; box-shadow: -15px 0 30px rgba(255, 0, 170, 0.25), 15px 0 30px rgba(0, 229, 255, 0.25);">
         
-        <h1>SWIPE<br>CHESS</h1>
+        <h1>SWAP<br>CHESS</h1>
         <div class="subtitle">Eval Instinct Trainer</div>
         
         <div style="background: #0c0d14; padding: 15px 40px; border-radius: 20px; border: 1px solid #1a1c29; margin-bottom: 20px;">
@@ -89,27 +88,17 @@
         <div id="floating-points" class="points-floating"></div>
 
         <div class="game-area-wrapper">
-            <img id="white-king-icon" class="swipe-feedback-icon" src="https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg">
-            <img id="black-king-icon" class="swipe-feedback-icon" src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg">
-            <div id="swipe-card">
+            <div id="board-container">
+                <div id="last-move" style="margin-bottom:10px; color:#888; font-size:0.9em;">Last Move: -</div>
                 
-                <div style="display:flex; justify-content:center; margin-bottom:15px;">
-                    <span class="badge badge-black" style="text-align: center; line-height: 1.1; width: 160px;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg> 
-                        <div>BLACK<br><span style="font-size: 0.7em; opacity: 0.7;">IS BETTER</span></div>
-                    </span>
-                </div>
-
                 <div id="board"></div>
-
-                <div style="display:flex; justify-content:center; margin-top:15px;">
-                    <span class="badge badge-white" style="text-align: center; line-height: 1.1; width: 160px;">
-                        <div>WHITE<br><span style="font-size: 0.7em; opacity: 0.7;">IS BETTER</span></div> 
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-                    </span>
-                </div>
                 
-                <div id="last-move" style="margin-top:10px; color:#555;">Last Move: -</div>
+                <div id="game-prompt">YOU ARE WHITE.<br>WOULD YOU SWAP?</div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-game btn-keep" onclick="makeGuess('keep')">KEEP IT</button>
+                <button class="btn btn-game btn-swap" onclick="makeGuess('swap')">SWAP COLOR</button>
             </div>
         </div>
         
@@ -148,8 +137,9 @@
     
     <script>
         let database = [], currentPosIndex = 0, score = 0, streak = 0, bestScore = parseInt(localStorage.getItem("swipeChessHighScore")) || 0;
-        let board = null, isDragging = false, startX = 0, startY = 0, currentX = 0, currentY = 0, isProcessingSwipe = false;
+        let board = null, isProcessingGuess = false;
         let timerInterval = null, secondsElapsed = 0, puzzleStartTime = 0;
+        let currentPerspective = 'white'; // Memorizza da che lato stiamo guardando
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -184,21 +174,21 @@
             } catch (e) { document.getElementById('start-btn').innerText = "DB ERROR"; }
         }
 
-        $(document).ready(() => { updateBestScoreDisplays(); setupSwipeListeners(); loadDatabase(); });
+        $(document).ready(() => { updateBestScoreDisplays(); loadDatabase(); });
 
         function switchScreen(id) { $('.screen').removeClass('active'); $('#' + id).addClass('active'); }
 
         function updateBestScoreDisplays() { document.getElementById('home-best-score').innerText = bestScore; }
 
         function startGame() {
-            score = 0; streak = 0; currentPosIndex = 0; isProcessingSwipe = false;
+            score = 0; streak = 0; currentPosIndex = 0; isProcessingGuess = false;
             
-            // --- LOGICA DI SMISTAMENTO (Facili -> Medie -> Difficili) ---
+            // Smistamento (Facili -> Medie -> Difficili)
             let easy = [], medium = [], hard = [];
             database.forEach(pos => {
                 let evalVal = 0;
                 if (typeof pos.eval === 'string' && pos.eval.includes('M')) {
-                    evalVal = 100; // I matti valgono 100 per finire sicuri nelle "Facili"
+                    evalVal = 100;
                 } else {
                     evalVal = Math.abs(parseFloat(pos.eval)); 
                 }
@@ -209,17 +199,11 @@
 
             shuffleArray(easy); shuffleArray(medium); shuffleArray(hard);
             database = [...easy, ...medium, ...hard];
-            // ------------------------------------------------------------
 
             document.getElementById('score').innerText = "0";
             document.getElementById('game-streak').innerText = "0";
             document.getElementById('message').innerText = "";
-            document.getElementById('swipe-card').style.transition = 'none';
-            document.getElementById('swipe-card').style.transform = 'translate(0, 0) rotate(0)';
-            document.getElementById('swipe-card').style.opacity = '1';
-            
-            document.getElementById('white-king-icon').style.opacity = 0;
-            document.getElementById('black-king-icon').style.opacity = 0;
+            document.getElementById('board-container').style.opacity = '1';
 
             updateBestScoreDisplays();
             switchScreen('game-screen');
@@ -232,19 +216,11 @@
         }
 
         function loadPosition() {
-            if(isProcessingSwipe) return;
-            const card = document.getElementById('swipe-card');
-            const wIcon = document.getElementById('white-king-icon');
-            const bIcon = document.getElementById('black-king-icon');
-            
-            card.style.transition = 'none';
-            card.style.transform = 'translate(0, 0) rotate(0)';
-            card.style.opacity = '1';
-            
-            wIcon.style.transition = 'none';
-            bIcon.style.transition = 'none';
-            wIcon.style.opacity = 0;
-            bIcon.style.opacity = 0;
+            if(isProcessingGuess) return;
+            const container = document.getElementById('board-container');
+            container.style.transition = 'none';
+            container.style.opacity = '1';
+            container.style.transform = 'scale(1)';
             
             if(currentPosIndex >= database.length) { shuffleArray(database); currentPosIndex = 0; }
             const pos = database[currentPosIndex];
@@ -257,8 +233,20 @@
             const game = new Chess(pos.fen);
             const moveResult = game.move({ from: fromSq, to: toSq, promotion: promo });
             
+            // Chi ha mosso? L'orientamento sarà dalla prospettiva di chi ha APPENA mosso.
+            // game.turn() ci dice di chi è il turno attuale (quindi l'altro ha appena mosso).
+            const currentTurn = game.turn(); 
+            currentPerspective = currentTurn === 'w' ? 'black' : 'white';
+
             if (moveResult) board.position(game.fen(), false); else board.position(pos.fen, false);
             
+            // Gira la scacchiera!
+            board.orientation(currentPerspective);
+            
+            // Aggiorna il testo e il colore del prompt in base alla prospettiva
+            const colorCode = currentPerspective === 'white' ? '#fff' : '#ff00aa';
+            document.getElementById('game-prompt').innerHTML = `YOU ARE <span style="color:${colorCode}">${currentPerspective}</span>.<br>WOULD YOU SWAP?`;
+
             document.getElementById('last-move').innerHTML = `Last Move: <b>${fromSq}-${toSq}</b>`;
             document.getElementById('message').style.opacity = 0;
             
@@ -267,79 +255,6 @@
             $('.square-' + toSq).addClass('highlight-move');
             
             puzzleStartTime = Date.now();
-            
-            setTimeout(() => { 
-                card.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease-out'; 
-                wIcon.style.transition = 'opacity 0.2s';
-                bIcon.style.transition = 'opacity 0.2s';
-            }, 50);
-        }
-
-        function setupSwipeListeners() {
-            const card = document.getElementById('swipe-card');
-            const whiteIcon = document.getElementById('white-king-icon');
-            const blackIcon = document.getElementById('black-king-icon');
-
-            const onStart = (x, y) => { 
-                if(isProcessingSwipe) return; 
-                isDragging = true; 
-                startX = x; startY = y; 
-                card.style.transition = 'none'; 
-            };
-            
-            const onMove = (x, y) => {
-                if(!isDragging || isProcessingSwipe) return;
-                currentX = x; currentY = y; 
-                let dx = currentX - startX;
-                let dy = currentY - startY; 
-                
-                card.style.transform = `translate(${dx}px, ${dy}px) rotate(${dx * 0.03}deg)`;
-                card.style.opacity = 1 - Math.min(Math.abs(dy) / 200, 0.7);
-                
-                let prog = Math.min(Math.abs(dy) / 100, 1);
-                
-                if(dy > 0) { 
-                    whiteIcon.style.opacity = prog; 
-                    whiteIcon.style.transform = `translate(-50%, -50%) scale(${0.5 + prog})`; 
-                    blackIcon.style.opacity = 0; 
-                } else { 
-                    blackIcon.style.opacity = prog; 
-                    blackIcon.style.transform = `translate(-50%, -50%) scale(${0.5 + prog})`; 
-                    whiteIcon.style.opacity = 0; 
-                }
-            };
-            
-            const onEnd = () => {
-                if(!isDragging || isProcessingSwipe) return; isDragging = false;
-                let dx = currentX - startX;
-                let dy = currentY - startY;
-                
-                if(Math.abs(dy) > 80) {
-                    isProcessingSwipe = true;
-                    let guess = dy > 0 ? 'white' : 'black'; 
-                    
-                    card.style.transition = 'all 0.3s ease-in';
-                    card.style.transform = `translate(${dx}px, ${(dy > 0 ? 1 : -1) * window.innerHeight}px) rotate(${dx * 0.05}deg)`;
-                    card.style.opacity = 0;
-                    
-                    whiteIcon.style.opacity = 0;
-                    blackIcon.style.opacity = 0;
-
-                    setTimeout(() => makeGuess(guess), 250);
-                } else {
-                    card.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                    card.style.transform = 'translate(0, 0) rotate(0)';
-                    card.style.opacity = 1;
-                    whiteIcon.style.opacity = 0; blackIcon.style.opacity = 0;
-                }
-            };
-
-            card.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive:true});
-            card.addEventListener('touchmove', e => { if(e.cancelable) e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive:false});
-            card.addEventListener('touchend', onEnd);
-            card.addEventListener('mousedown', e => onStart(e.pageX, e.pageY));
-            window.addEventListener('mousemove', e => onMove(e.pageX, e.pageY));
-            window.addEventListener('mouseup', onEnd);
         }
 
         function showFloatingPoints(points) {
@@ -350,14 +265,28 @@
             floatingEl.style.animation = 'floatUpCenter 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
         }
 
-        function makeGuess(guess) {
+        function makeGuess(action) {
+            if(isProcessingGuess) return;
+            isProcessingGuess = true;
+
             const pos = database[currentPosIndex];
             const msg = document.getElementById('message');
-            msg.style.opacity = 1;
+            const container = document.getElementById('board-container');
             
+            // Animazione di uscita
+            container.style.transition = 'all 0.3s ease-out';
+            container.style.opacity = '0';
+            container.style.transform = 'scale(0.95)';
+
+            msg.style.opacity = 1;
             let solveTimeInSeconds = (Date.now() - puzzleStartTime) / 1000;
             
-            if(guess === pos.correctAnswer) {
+            // Calcolo la logica:
+            // action = 'keep' significa che sceglie il colore della prospettiva attuale.
+            // action = 'swap' significa che sceglie l'altro colore.
+            let userGuessedColor = action === 'keep' ? currentPerspective : (currentPerspective === 'white' ? 'black' : 'white');
+            
+            if(userGuessedColor === pos.correctAnswer) {
                 let speedBonus = Math.max(0, Math.round((30 - solveTimeInSeconds) * 15));
                 let pointsEarned = 100 + speedBonus;
                 
@@ -371,15 +300,14 @@
                 
                 msg.innerText = `CORRECT! 🔥`; msg.className = "success";
                 currentPosIndex++;
-                isProcessingSwipe = false;
-                setTimeout(loadPosition, 700);
+                isProcessingGuess = false;
+                setTimeout(loadPosition, 500);
             } else {
                 stopTimer();
                 msg.innerText = `WRONG!`; msg.className = "error";
                 
                 if(score > bestScore) { bestScore = score; localStorage.setItem("swipeChessHighScore", bestScore); }
                 
-                // --- CREAZIONE LINK LICHESS ---
                 const cleanMove = pos.lastMove.replace('-', '').trim();
                 const fromSq = cleanMove.substring(0, 2);
                 const toSq = cleanMove.substring(2, 4);
@@ -407,6 +335,8 @@
                 }, 1000);
             }
         }
+
+        function goHome() { stopTimer(); updateBestScoreDisplays(); switchScreen('home-screen'); }
     </script>
 </body>
 </html>
