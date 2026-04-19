@@ -201,8 +201,8 @@
             container.style.transform = 'scale(1)';
             
             // --- LOGICA VARIETÀ E DIFFICOLTÀ MIGLIORATA ---
-            let targetBaseIndex = Math.floor(score / 15); // Aumenta di base ogni 15 punti
-            let windowSize = 60; // FINESTRA GIGANTE: Peschiamo tra 250 posizioni!
+            let targetBaseIndex = Math.floor(score / 30); // VELOCITA' DI PROGRESSIONE DELLA DIFFICOLTA', PIU' IL VALORE E' ALTO PIU' E' LENTO NEL SALIRE DI DIFFICOLTA'
+            let windowSize = 45; // GRANDEZZA DEL POOL DELLE POSIZIONI IN AVANTI PER DARE VARIETA' TRA UNA PARTITA E L'ALTRA
             
             let randomIndex;
             let attempts = 0;
