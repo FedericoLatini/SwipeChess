@@ -115,11 +115,14 @@
     <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     
-    <script>
+   <script>
         let database = [], currentPosIndex = 0, score = 0, streak = 0, bestScore = parseInt(localStorage.getItem("swipeChessHighScore")) || 0;
         let board = null, isProcessingGuess = false;
         let timerInterval = null, secondsElapsed = 0, puzzleStartTime = 0;
         let currentPerspective = 'white';
+        
+        // NUOVO: Memoria per i puzzle già giocati in questa sessione
+        let playedIndices = new Set(); 
 
         function formatTime(totalSeconds) {
             const m = Math.floor(totalSeconds / 60);
@@ -163,17 +166,15 @@
 
         function startGame() {
             score = 0; streak = 0; isProcessingGuess = false;
+            playedIndices.clear(); // Svuotiamo la memoria a ogni nuova partita!
             
-            // --- ORDINAMENTO DIFFICOLTÀ DECRESCENTE (da Matto a +0.5) ---
+            // ORDINAMENTO DECRESCENTE (da Matto a +0.5)
             database.sort((a, b) => {
                 function getEvalVal(pos) {
                     if (typeof pos.eval === 'string' && pos.eval.includes('M')) return 100;
                     return Math.abs(parseFloat(pos.eval)); 
                 }
-                let valA = getEvalVal(a);
-                let valB = getEvalVal(b);
-                // I valori più alti (facili) vanno all'inizio dell'array
-                return valB - valA;
+                return getEvalVal(b) - getEvalVal(a);
             });
 
             document.getElementById('score').innerText = "0";
@@ -188,7 +189,7 @@
             setTimeout(() => {
                 if (!board) board = Chessboard('board', { position: 'start', pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png' });
                 board.resize(); 
-                loadPosition(); // La prima posizione parte sempre con score 0
+                loadPosition(); 
             }, 100);
         }
 
@@ -199,17 +200,23 @@
             container.style.opacity = '1';
             container.style.transform = 'scale(1)';
             
-            // --- LOGICA DIFFICOLTÀ DINAMICA BASATA SUL PUNTEGGIO ---
-            // targetBaseIndex indica dove "miriamo" nel database in base allo score.
-            // score / 20 è un parametro regolabile: più è basso, più la difficoltà sale in fretta.
-            let targetBaseIndex = Math.floor(score / 20);
+            // --- LOGICA VARIETÀ E DIFFICOLTÀ MIGLIORATA ---
+            let targetBaseIndex = Math.floor(score / 15); // Aumenta di base ogni 15 punti
+            let windowSize = 250; // FINESTRA GIGANTE: Peschiamo tra 250 posizioni!
             
-            // Per non essere ripetitivi, scegliamo a caso tra 30 posizioni vicine a quel livello.
-            let windowSize = 30;
-            let randomIndex = targetBaseIndex + Math.floor(Math.random() * windowSize);
-            
-            // Protezione per non uscire dai limiti del database
-            currentPosIndex = Math.min(randomIndex, database.length - 1);
+            let randomIndex;
+            let attempts = 0;
+
+            // Continua a cercare un indice finché non ne trova uno nuovo (o rinuncia dopo 10 tentativi per sicurezza)
+            do {
+                randomIndex = targetBaseIndex + Math.floor(Math.random() * windowSize);
+                randomIndex = Math.min(randomIndex, database.length - 1);
+                attempts++;
+            } while (playedIndices.has(randomIndex) && attempts < 10);
+
+            // Salviamo la posizione in memoria
+            playedIndices.add(randomIndex);
+            currentPosIndex = randomIndex;
             
             const pos = database[currentPosIndex];
             
@@ -264,7 +271,7 @@
                 let speedBonus = Math.max(0, Math.round((30 - solveTimeInSeconds) * 15));
                 let pointsEarned = 100 + speedBonus;
                 
-                score += pointsEarned; // Lo score aumenta, la prossima loadPosition userà questo valore!
+                score += pointsEarned; 
                 streak++;
                 
                 document.getElementById('score').innerText = score;
@@ -275,7 +282,7 @@
                 msg.innerText = `CORRECT! 🔥`; msg.className = "success";
                 
                 isProcessingGuess = false;
-                setTimeout(loadPosition, 500); // Ricarica la posizione basandosi sul nuovo punteggio
+                setTimeout(loadPosition, 500); 
             } else {
                 stopTimer();
                 msg.innerText = `WRONG!`; msg.className = "error";
